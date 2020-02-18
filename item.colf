@@ -1,0 +1,16 @@
+package serialization
+
+type Item struct {
+	NtinId int32
+	Serial text
+	Status int32
+	ParentNtinId int32
+	ParentSerial text
+	Attributes []Attribute
+	HelperCode text
+}
+
+type Attribute struct {
+	Name text
+	Value text
+}
