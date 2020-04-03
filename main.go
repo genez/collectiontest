@@ -12,7 +12,6 @@ import (
 	"os"
 	"runtime/pprof"
 	"runtime/trace"
-	"sync"
 	"time"
 )
 
@@ -29,29 +28,18 @@ func main() {
 
 	log.Println("Loading...")
 
-	items := make(chan *serialization.Item, 1000)
-	wg := &sync.WaitGroup{}
-	wg.Add(1)
-	go dt.BulkInsert(wg, items)
-
-	for i := 0; i < 10*1000000; i++ {
-		item := serialization.Item{
-			NtinId:       42,
-			Serial:       fmt.Sprintf("%015d", i),
-			Status:       1,
-			ParentNtinId: 69,
-			ParentSerial: fmt.Sprintf("%015d", (20*1000000)-i),
-			Attributes: []*serialization.Attribute{
-				{"Pippo",fmt.Sprintf("%X", i)},
-			},
+	var item serialization.Item
+	for i := 0; i < 6*1000_000; i++ {
+		item.NtinId = 42
+		item.Serial =       fmt.Sprintf("%015d", i)
+		item.Status =       1
+		item.ParentNtinId = 69
+		item.ParentSerial = fmt.Sprintf("%015d", (20*1000_000)-i)
+		item.Attributes = []*serialization.Attribute{
+			{"Pippo",fmt.Sprintf("%X", i)},
 		}
-
-		items <- &item
+		dt.Insert(&item)
 	}
-	close(items)
-	wg.Wait()
-
-	log.Println("...done")
 
 	err = trace.Start(f)
 	if err != nil {
