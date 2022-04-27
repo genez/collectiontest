@@ -1,4 +1,4 @@
-module collectiontest
+module github.com/genez/collectiontest
 
 go 1.13
 
